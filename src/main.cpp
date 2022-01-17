@@ -26,7 +26,7 @@ competition Competition;
 float WHEEL_CIRCUMFERENCE = 4.125 * 3.1416;
 float SLIPPAGE = 0.5;
 int GEAR_RATIO = 1;
-int AUTON_DRIVE_PWR = 50;
+int DEFAULT_drive_pwr = 50;
 
 
 // ------------------ convert inches to deg ---------------------- // 
@@ -40,18 +40,64 @@ float inches_to_deg(float inches){
     return deg_converted;
 };
 
+int number_ = inches_to_deg(50);
+
 // ------------------ -------------------- ---------------------- // 
-void moveFWD(float inches) {
-    float AUTON_DEG;
-    AUTON_DEG = inches_to_deg(inches);
+void moveFWD(float inches, int drive_pwr) {
+    
+    float inchesPerDegree = float(WHEEL_CIRCUMFERENCE) / float(360.0);
+    float degrees = float(inches) / float(inchesPerDegree);
 
-    BL.rotateFor(vex::directionType::fwd, AUTON_DEG, AUTON_DRIVE_PWR, vex::velocityUnits::pct, false);
-    BR.rotateFor(vex::directionType::fwd, AUTON_DEG, AUTON_DRIVE_PWR, vex::velocityUnits::pct, false);
-    FL.rotateFor(vex::directionType::fwd, AUTON_DEG, AUTON_DRIVE_PWR, vex::velocityUnits::pct, false);
-    FR.rotateFor(vex::directionType::fwd, AUTON_DEG, AUTON_DRIVE_PWR, vex::velocityUnits::pct, false);
+    float deg_converted = degrees * GEAR_RATIO;
 
-  };
+    // Degree values are left as positive so we move forward
+    BL.spinFor(deg_converted, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+    FL.spinFor(deg_converted, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+    BR.spinFor(deg_converted, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+    FR.spinFor(deg_converted, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
 
+};
+
+void moveREV(float inches, int drive_pwr) {
+    
+    float inchesPerDegree = float(WHEEL_CIRCUMFERENCE) / float(360.0);
+    float degrees = float(inches) / float(inchesPerDegree);
+
+    float deg_converted = degrees * GEAR_RATIO;
+
+    // Changed the degrees to negative values so that we can move backwards
+    BL.spinFor(-deg_converted, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+    FL.spinFor(-deg_converted, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+    BR.spinFor(-deg_converted, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+    FR.spinFor(-deg_converted, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+
+};
+
+void turnRight(float degrees, int drive_pwr){
+
+    BL.spinFor(degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+    FL.spinFor(degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+    BR.spinFor(-degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+    FR.spinFor(-degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+};
+
+void turnLeft(float degrees, int drive_pwr){
+  
+    BL.spinFor(-degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+    FL.spinFor(-degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+    BR.spinFor(degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+    FR.spinFor(degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+};
+
+void swerveLeft(float degrees, int drive_pwr){
+  BR.spinFor(degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+  FR.spinFor(degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+}
+
+void swerveRight(float degrees, int drive_pwr){
+  BL.spinFor(degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+  FL.spinFor(degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+}
 
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
