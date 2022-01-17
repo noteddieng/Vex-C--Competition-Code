@@ -8,6 +8,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "vex.h"
+#include "robot-config.h"
 
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
@@ -21,15 +22,42 @@ using namespace vex;
 // A global instance of competition
 competition Competition;
 
-// define your global instances of motors and other devices here
+// Variables
+float WHEEL_CIRCUMFERENCE = 4.125 * 3.1416;
+float SLIPPAGE = 0.5;
+int GEAR_RATIO = 1;
+int AUTON_DRIVE_PWR = 50;
 
 
+// ------------------ convert inches to deg ---------------------- // 
+float inches_to_deg(float inches){
+
+    float inchesPerDegree = float(WHEEL_CIRCUMFERENCE) / float(360.0);
+    float degrees = float(inches) / float(inchesPerDegree);
+
+    float deg_converted = degrees * GEAR_RATIO;
+
+    return deg_converted;
+};
+
+// ------------------ -------------------- ---------------------- // 
+void moveFWD(float inches) {
+    float AUTON_DEG;
+    AUTON_DEG = inches_to_deg(inches);
+
+    BL.rotateFor(vex::directionType::fwd, AUTON_DEG, AUTON_DRIVE_PWR, vex::velocityUnits::pct, false);
+    BR.rotateFor(vex::directionType::fwd, AUTON_DEG, AUTON_DRIVE_PWR, vex::velocityUnits::pct, false);
+    FL.rotateFor(vex::directionType::fwd, AUTON_DEG, AUTON_DRIVE_PWR, vex::velocityUnits::pct, false);
+    FR.rotateFor(vex::directionType::fwd, AUTON_DEG, AUTON_DRIVE_PWR, vex::velocityUnits::pct, false);
+
+  };
 
 
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
+  // Set braketypes
   BL.setStopping(brakeType::coast);
   FL.setStopping(brakeType::coast);
   BR.setStopping(brakeType::coast);
@@ -38,13 +66,11 @@ void pre_auton(void) {
   FAR.setStopping(brakeType::hold);
   BAL.setStopping(brakeType::hold);
   BAR.setStopping(brakeType::hold);
-  
-}
-
+};
 
 
 void autonomous(void) {
-  BL.spin(forward);
+  
 }
 
 
