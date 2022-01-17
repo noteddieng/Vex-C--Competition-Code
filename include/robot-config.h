@@ -5,17 +5,18 @@ extern brain Brain;
 using signature = vision::signature;
 
 // VEXcode devices
-extern motor BL;
-extern motor BR;
+extern controller Controller1;
 extern motor FR;
 extern motor FL;
-extern motor FAL;
+extern motor BR;
+extern motor BL;
+extern motor BAR;
 extern motor BAL;
 extern motor FAR;
-extern motor BAR;
-extern signature vision_1__MOBILE_GOAL;
-extern signature vision_1__RED_GOAL;
-extern signature vision_1__BLUE_GOAL;
+extern motor FAL;
+extern signature vision_1__SIG_1;
+extern signature vision_1__SIG_2;
+extern signature vision_1__SIG_3;
 extern signature vision_1__SIG_4;
 extern signature vision_1__SIG_5;
 extern signature vision_1__SIG_6;
