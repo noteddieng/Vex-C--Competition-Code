@@ -92,12 +92,66 @@ void turnLeft(float degrees, int drive_pwr){
 void swerveLeft(float degrees, int drive_pwr){
   BR.spinFor(degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
   FR.spinFor(degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
-}
+};
 
 void swerveRight(float degrees, int drive_pwr){
   BL.spinFor(degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
   FL.spinFor(degrees, rotationUnits::deg, drive_pwr, velocityUnits::pct, false);
+};
+
+void FrontArmUp(float degrees, int pwr){
+  FAL.spinFor(degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
+  FAR.spinFor(degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
+
+};
+
+void FrontArmDown(float degrees, int pwr){
+  FAL.spinFor(-degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
+  FAR.spinFor(-degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
+};
+
+void BackArmUp(float degrees, int pwr){
+  BAL.spinFor(degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
+  BAR.spinFor(degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
+};
+
+void BackArmDown(float degrees, int pwr){
+  BAL.spinFor(-degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
+  BAR.spinFor(-degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
+};
+
+bool clawClose(){
+  airbender.set(true);
+
+  return true;
 }
+
+// Alternative, if this doesn't work:
+/*
+void clawClose(){
+  airbender.set(true);
+}
+*/
+
+void clawOpen(){
+  airbender.set(false);
+
+}
+
+
+// Function may / may not work, not sure about the function type
+
+bool checkIfClawClosed(){
+  if(clawClose() == true){
+    return true;
+  }
+  else{
+    return false;
+  }
+
+};
+
+
 
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
