@@ -13,14 +13,13 @@ motor FR = motor(PORT1, ratio18_1, true);
 motor FL = motor(PORT2, ratio18_1, false);
 motor BR = motor(PORT3, ratio18_1, true);
 motor BL = motor(PORT4, ratio18_1, false);
-motor BAR = motor(PORT5, ratio18_1, false);
 motor BAL = motor(PORT6, ratio18_1, false);
 motor FAR = motor(PORT7, ratio18_1, false);
 motor FAL = motor(PORT8, ratio18_1, true);
 /*vex-vision-config:begin*/
 vision vision_1 = vision (PORT11, 50);
 /*vex-vision-config:end*/
-digital_out airbender = digital_out(Brain.ThreeWirePort.A);
+motor FC = motor(PORT5, ratio36_1, false);
 
 // VEXcode generated functions
 // define variable for remote controller enable/disable

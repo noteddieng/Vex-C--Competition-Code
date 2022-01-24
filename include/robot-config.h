@@ -10,7 +10,6 @@ extern motor FR;
 extern motor FL;
 extern motor BR;
 extern motor BL;
-extern motor BAR;
 extern motor BAL;
 extern motor FAR;
 extern motor FAL;
@@ -22,7 +21,7 @@ extern signature vision_1__SIG_5;
 extern signature vision_1__SIG_6;
 extern signature vision_1__SIG_7;
 extern vision vision_1;
-extern digital_out airbender;
+extern motor FC;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

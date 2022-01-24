@@ -18,12 +18,11 @@
 // FL                   motor         2               
 // BR                   motor         3               
 // BL                   motor         4               
-// BAR                  motor         5               
 // BAL                  motor         6               
 // FAR                  motor         7               
 // FAL                  motor         8               
 // vision_1             vision        11              
-// airbender            digital_out   A               
+// FC                   motor         5               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 using namespace vex;
@@ -119,55 +118,160 @@ void FrontArmDown(float degrees, int pwr){
   FAR.spinFor(-degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
 };
 
+void frontClawDown(float degrees, int pwr){
+  FC.spinFor(-degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
+};
+
+void frontClawUp(float degrees, int pwr){
+  FC.spinFor(degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
+}
+
 void BackArmUp(float degrees, int pwr){
   BAL.spinFor(degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
-  BAR.spinFor(degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
 };
 
 void BackArmDown(float degrees, int pwr){
   BAL.spinFor(-degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
-  BAR.spinFor(-degrees, rotationUnits::deg, pwr, velocityUnits::pct, false);
 };
 
-bool clawClose(){
-  airbender.set(true);
 
-  return true;
-}
 
-// Alternative, if this doesn't work:
-/*
-void clawClose(){
-  airbender.set(true);
-}
-*/
-
-void clawOpen(){
-  airbender.set(false);
-
-}
-
-void motormove(){
-  BL.spin(directionType::fwd, 50, velocityUnits::pct, false);
-}
-// Function may / may not work, not sure about the function type
-
-bool checkIfClawClosed(){
-  if(clawClose() == true){
-    return true;
-  }
-  else{
-    return false;
-  }
-
-};
 
 
 
 // Vision code stuf
 
-void turnToCenterBlue(){
+bool turnToCenterBlue(){
+
+  int FOV = 158;
+  int X_BIAS = 20;
+  while(true){
+    vision_1.takeSnapshot(vision_1__BLUE_GOAL);
+
+    if(vision_1.largestObject.exists){
+      
+      if(vision_1.largestObject.centerX > FOV + X_BIAS){
+        BL.spin(directionType::fwd, 50, velocityUnits::pct);
+        FL.spin(directionType::fwd, 50, velocityUnits::pct);
+        FR.spin(directionType::rev, 50, velocityUnits::pct);
+        BR.spin(directionType::rev, 50, velocityUnits::pct);
+
+        return true;
+
+
+      } else if(vision_1.largestObject.centerX < FOV + X_BIAS){
+        BL.spin(directionType::rev, 50, velocityUnits::pct);
+        FL.spin(directionType::rev, 50, velocityUnits::pct);
+        BR.spin(directionType::fwd, 50, velocityUnits::pct);
+        FR.spin(directionType::fwd, 50, velocityUnits::pct);
+
+        return true;
+
+      }
+    }
+    else{
+      BL.stop(brakeType::coast);
+      BR.stop(brakeType::coast);
+      FL.stop(brakeType::coast);
+      FR.stop(brakeType::coast);
+
+    }
+    wait(20, msec);
+  }
   
+}
+
+bool forwardToScaleBlue(){
+  int A_THRESH = 10;
+
+  while(true){
+    vision_1.takeSnapshot(vision_1__BLUE_GOAL);
+
+    int object_area = vision_1.largestObject.width * vision_1.largestObject.height;
+
+    if(vision_1.largestObject.exists){
+      if(object_area < A_THRESH){
+        FL.spin(directionType::fwd, 50, velocityUnits::pct);
+        BL.spin(directionType::fwd, 50, velocityUnits::pct);
+        FR.spin(directionType::fwd, 50, velocityUnits::pct);
+        BR.spin(directionType::fwd, 50, velocityUnits::pct);
+
+        return true;
+      }
+      else if(object_area > A_THRESH){
+        FL.stop(brakeType::coast);
+        BL.stop(brakeType::coast);
+        FR.stop(brakeType::coast);
+        BR.stop(brakeType::coast);
+
+      }
+    }
+    else{
+      BR.stop(brakeType::coast);
+      BL.stop(brakeType::coast);
+      FR.stop(brakeType::coast);
+      FL.stop(brakeType::coast);
+    }
+  }
+}
+
+void pickUpBlueGoal(){
+  while(true){
+
+    vision_1.takeSnapshot(vision_1__BLUE_GOAL);
+
+    turnToCenterBlue();
+    forwardToScaleBlue();
+
+    int object_area = vision_1.largestObject.width * vision_1.largestObject.height;
+
+    if(vision_1.largestObject.exists){
+
+      if(turnToCenterBlue() == true || forwardToScaleBlue() == true){
+        frontClawDown(180, 100);
+
+        FrontArmUp(90, 75);
+      }
+      else if(turnToCenterBlue() != true || forwardToScaleBlue() != true){
+        turnToCenterBlue();
+
+        if(turnToCenterBlue() == true){
+
+          forwardToScaleBlue();
+
+          if(forwardToScaleBlue() == true){
+            frontClawDown(180, 100);
+
+            FrontArmUp(90, 75);
+          }
+        }
+      }
+      else if(turnToCenterBlue() == true || forwardToScaleBlue() != true){
+        forwardToScaleBlue();
+        if(forwardToScaleBlue() == true){
+
+          frontClawDown(180, 100);
+
+          FrontArmUp(90, 75);
+        }
+      }
+    else if(turnToCenterBlue() != true || forwardToScaleBlue() == true){
+      turnToCenterBlue();
+
+      if(turnToCenterBlue() == true){
+        frontClawDown(180, 100);
+        FrontArmUp(90, 75);
+      }
+    }
+
+    }
+    else{
+      BL.stop(brakeType::coast);
+      FL.stop(brakeType::coast);
+      BR.stop(brakeType::coast);
+      FR.stop(brakeType::coast);
+    }
+  }
 }
 
 
@@ -176,6 +280,7 @@ void pre_auton(void) {
   vexcodeInit();
 
   // Set braketypes
+
   
 };
 
@@ -206,32 +311,32 @@ void usercontrol(void) {
       FAR.spin(directionType::rev, 100, velocityUnits::pct);
   }
   else{
-    FAL.stop();
-    FAR.stop();
+    FAL.stop(brakeType::hold);
+    FAR.stop(brakeType::hold);
   }
 
   if(Controller1.ButtonX.pressing()){
-      BAR.spin(directionType::fwd, 100, velocityUnits::pct);
+      
       BAL.spin(directionType::fwd, 100, velocityUnits::pct);
   }
   else if(Controller1.ButtonB.pressing()){
-      BAR.spin(directionType::rev, 100, velocityUnits::pct);
+      
       BAL.spin(directionType::rev, 100, velocityUnits::pct);
   }
   else{
-    BAR.stop();
-    BAL.stop();
+    
+    BAL.stop(brakeType::hold);
 
   }
-  if(Controller1.ButtonR1.pressing()){
-    airbender.set(true);
+  if(Controller1.ButtonR2.pressing()){
+      FC.spin(directionType::rev, 100, velocityUnits::pct);
 
   }
-  else if(Controller1.ButtonR2.pressing()){
-    airbender.set(false);
+  else if(Controller1.ButtonR1.pressing()){
+     FC.spin(directionType::fwd, 100, velocityUnits::pct);
   }
   else{
-    airbender.set(false);
+    FC.stop(brakeType::hold);
   }
 
     wait(20, msec); // Sleep the task for a short amount of time to
@@ -246,38 +351,7 @@ int main() {
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
-
-  int FOV = 158;
-  int X_BIAS = 20;
-  while(true){
-    vision_1.takeSnapshot(vision_1__BLUE_GOAL);
-
-    if(vision_1.largestObject.exists){
-      
-      if(vision_1.largestObject.centerX > FOV + X_BIAS){
-        BL.spin(directionType::fwd, velocityUnits::pct, 50, false);
-        FL.spin(directionType::fwd, velocityUnits::pct, 50, false);
-        FR.spin(directionType::rev, velocityUnits::pct, 50, false);
-        BR.spin(directionType::rev, velocityUnits::pct, 50, false);
-
-
-      } else if(vision_1.largestObject.centerX < FOV + X_BIAS){
-        BL.spin(directionType::rev, 50, velocityUnits::pct, false);
-        FL.spin(directionType::rev, 50, velocityUnits::pct, false);
-        BR.spin(directionType::fwd, 50, velocityUnits::pct, false);
-        FR.spin(directionType::fwd, 50, velocityUnits::pct, false);
-
-      }
-    }
-    else{
-      BL.stop(brakeType::coast);
-      BR.stop(brakeType::coast);
-      FL.stop(brakeType::coast);
-      FR.stop(brakeType::coast);
-
-    }
-    wait(20, msec);
-  }
+  
 
   // Run the pre-autonomous function.
   pre_auton();
@@ -286,4 +360,5 @@ int main() {
   while (true) {
     wait(100, msec);
   }
+  
 }
