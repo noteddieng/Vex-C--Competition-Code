@@ -139,7 +139,7 @@ void BackArmDown(float degrees, int pwr){
 
 
 
-// Vision code stuf
+// Vision code stuff
 
 bool turnToCenterBlue(){
 
@@ -275,6 +275,271 @@ void pickUpBlueGoal(){
 }
 
 
+bool turnToCenterRed(){
+
+  int FOV = 158;
+  int X_BIAS = 20;
+  while(true){
+    vision_1.takeSnapshot(vision_1__RED_GOAL);
+
+    if(vision_1.largestObject.exists){
+      
+      if(vision_1.largestObject.centerX > FOV + X_BIAS){
+        BL.spin(directionType::fwd, 50, velocityUnits::pct);
+        FL.spin(directionType::fwd, 50, velocityUnits::pct);
+        FR.spin(directionType::rev, 50, velocityUnits::pct);
+        BR.spin(directionType::rev, 50, velocityUnits::pct);
+
+        return true;
+
+
+      } else if(vision_1.largestObject.centerX < FOV + X_BIAS){
+        BL.spin(directionType::rev, 50, velocityUnits::pct);
+        FL.spin(directionType::rev, 50, velocityUnits::pct);
+        BR.spin(directionType::fwd, 50, velocityUnits::pct);
+        FR.spin(directionType::fwd, 50, velocityUnits::pct);
+
+        return true;
+
+      }
+    }
+    else{
+      BL.stop(brakeType::coast);
+      BR.stop(brakeType::coast);
+      FL.stop(brakeType::coast);
+      FR.stop(brakeType::coast);
+
+    }
+    wait(20, msec);
+  }
+  
+}
+bool forwardToScaleRed(){
+  int A_THRESH = 10;
+
+  while(true){
+    vision_1.takeSnapshot(vision_1__RED_GOAL);
+
+    int object_area = vision_1.largestObject.width * vision_1.largestObject.height;
+
+    if(vision_1.largestObject.exists){
+      if(object_area < A_THRESH){
+        FL.spin(directionType::fwd, 50, velocityUnits::pct);
+        BL.spin(directionType::fwd, 50, velocityUnits::pct);
+        FR.spin(directionType::fwd, 50, velocityUnits::pct);
+        BR.spin(directionType::fwd, 50, velocityUnits::pct);
+
+        return true;
+      }
+      else if(object_area > A_THRESH){
+        FL.stop(brakeType::coast);
+        BL.stop(brakeType::coast);
+        FR.stop(brakeType::coast);
+        BR.stop(brakeType::coast);
+
+      }
+    }
+    else{
+      BR.stop(brakeType::coast);
+      BL.stop(brakeType::coast);
+      FR.stop(brakeType::coast);
+      FL.stop(brakeType::coast);
+    }
+  }
+}
+
+void pickUpRedGoal(){
+  while(true){
+
+    vision_1.takeSnapshot(vision_1__RED_GOAL);
+
+    turnToCenterRed();
+    forwardToScaleRed();
+
+    int object_area = vision_1.largestObject.width * vision_1.largestObject.height;
+
+    if(vision_1.largestObject.exists){
+
+      if(turnToCenterRed() == true || forwardToScaleRed() == true){
+        frontClawDown(180, 100);
+
+        FrontArmUp(90, 75);
+      }
+      else if(turnToCenterRed() != true || forwardToScaleRed() != true){
+        turnToCenterRed();
+
+        if(turnToCenterRed() == true){
+
+          forwardToScaleRed();
+
+          if(forwardToScaleRed() == true){
+            frontClawDown(180, 100);
+
+            FrontArmUp(90, 75);
+          }
+        }
+      }
+      else if(turnToCenterRed() == true || forwardToScaleRed() != true){
+        forwardToScaleRed();
+        if(forwardToScaleRed() == true){
+
+          frontClawDown(180, 100);
+
+          FrontArmUp(90, 75);
+        }
+      }
+    else if(turnToCenterRed() != true || forwardToScaleRed() == true){
+      turnToCenterRed();
+
+      if(turnToCenterRed() == true){
+        frontClawDown(180, 100);
+        FrontArmUp(90, 75);
+      }
+    }
+
+    }
+    else{
+      BL.stop(brakeType::coast);
+      FL.stop(brakeType::coast);
+      BR.stop(brakeType::coast);
+      FR.stop(brakeType::coast);
+    }
+  }
+}
+
+bool turnToCenterMG(){
+
+  int FOV = 158;
+  int X_BIAS = 20;
+  while(true){
+    vision_1.takeSnapshot(vision_1__MOBILE_GOAL);
+
+    if(vision_1.largestObject.exists){
+      
+      if(vision_1.largestObject.centerX > FOV + X_BIAS){
+        BL.spin(directionType::fwd, 50, velocityUnits::pct);
+        FL.spin(directionType::fwd, 50, velocityUnits::pct);
+        FR.spin(directionType::rev, 50, velocityUnits::pct);
+        BR.spin(directionType::rev, 50, velocityUnits::pct);
+
+        return true;
+
+
+      } else if(vision_1.largestObject.centerX < FOV + X_BIAS){
+        BL.spin(directionType::rev, 50, velocityUnits::pct);
+        FL.spin(directionType::rev, 50, velocityUnits::pct);
+        BR.spin(directionType::fwd, 50, velocityUnits::pct);
+        FR.spin(directionType::fwd, 50, velocityUnits::pct);
+
+        return true;
+
+      }
+    }
+    else{
+      BL.stop(brakeType::coast);
+      BR.stop(brakeType::coast);
+      FL.stop(brakeType::coast);
+      FR.stop(brakeType::coast);
+
+    }
+    wait(20, msec);
+  }
+  
+}
+
+bool forwardToScaleMG(){
+  int A_THRESH = 10;
+
+  while(true){
+    vision_1.takeSnapshot(vision_1__MOBILE_GOAL);
+
+    int object_area = vision_1.largestObject.width * vision_1.largestObject.height;
+
+    if(vision_1.largestObject.exists){
+      if(object_area < A_THRESH){
+        FL.spin(directionType::fwd, 50, velocityUnits::pct);
+        BL.spin(directionType::fwd, 50, velocityUnits::pct);
+        FR.spin(directionType::fwd, 50, velocityUnits::pct);
+        BR.spin(directionType::fwd, 50, velocityUnits::pct);
+
+        return true;
+      }
+      else if(object_area > A_THRESH){
+        FL.stop(brakeType::coast);
+        BL.stop(brakeType::coast);
+        FR.stop(brakeType::coast);
+        BR.stop(brakeType::coast);
+
+      }
+    }
+    else{
+      BR.stop(brakeType::coast);
+      BL.stop(brakeType::coast);
+      FR.stop(brakeType::coast);
+      FL.stop(brakeType::coast);
+    }
+  }
+}
+
+void pickUpMG(){
+  while(true){
+
+    vision_1.takeSnapshot(vision_1__MOBILE_GOAL);
+
+    turnToCenterMG();
+    forwardToScaleMG();
+
+    int object_area = vision_1.largestObject.width * vision_1.largestObject.height;
+
+    if(vision_1.largestObject.exists){
+
+      if(turnToCenterMG() == true || forwardToScaleMG() == true){
+        frontClawDown(180, 100);
+
+        FrontArmUp(90, 75);
+      }
+      else if(turnToCenterMG() != true || forwardToScaleMG() != true){
+        turnToCenterMG();
+
+        if(turnToCenterMG() == true){
+
+          forwardToScaleMG();
+
+          if(forwardToScaleMG() == true){
+            frontClawDown(180, 100);
+
+            FrontArmUp(90, 75);
+          }
+        }
+      }
+      else if(turnToCenterMG() == true || forwardToScaleMG() != true){
+        forwardToScaleBlue();
+        if(forwardToScaleMG() == true){
+
+          frontClawDown(180, 100);
+
+          FrontArmUp(90, 75);
+        }
+      }
+    else if(turnToCenterMG() != true || forwardToScaleMG() == true){
+      turnToCenterMG();
+
+      if(turnToCenterMG() == true){
+        frontClawDown(180, 100);
+        FrontArmUp(90, 75);
+      }
+    }
+
+    }
+    else{
+      BL.stop(brakeType::coast);
+      FL.stop(brakeType::coast);
+      BR.stop(brakeType::coast);
+      FR.stop(brakeType::coast);
+    }
+  }
+}
+
 void pre_auton(void) {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
@@ -286,7 +551,7 @@ void pre_auton(void) {
 
 
 void autonomous(void) {
-
+  /*
   moveFWD(10, 75);
   BackArmDown(180, 100);
   turnToCenterBlue();
@@ -296,7 +561,7 @@ void autonomous(void) {
   FrontArmDown(90, 50);
   frontClawUp(180, 100);
   turnRight(90, 50);
-  moveREV(10, 75);
+  moveREV(10, 75);*/
   
 }
 
