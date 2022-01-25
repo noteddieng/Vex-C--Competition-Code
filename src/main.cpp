@@ -223,8 +223,6 @@ void pickUpBlueGoal(){
     turnToCenterBlue();
     forwardToScaleBlue();
 
-    int object_area = vision_1.largestObject.width * vision_1.largestObject.height;
-
     if(vision_1.largestObject.exists){
 
       if(turnToCenterBlue() == true || forwardToScaleBlue() == true){
@@ -356,7 +354,6 @@ void pickUpRedGoal(){
     turnToCenterRed();
     forwardToScaleRed();
 
-    int object_area = vision_1.largestObject.width * vision_1.largestObject.height;
 
     if(vision_1.largestObject.exists){
 
@@ -488,8 +485,6 @@ void pickUpMG(){
 
     turnToCenterMG();
     forwardToScaleMG();
-
-    int object_area = vision_1.largestObject.width * vision_1.largestObject.height;
 
     if(vision_1.largestObject.exists){
 
