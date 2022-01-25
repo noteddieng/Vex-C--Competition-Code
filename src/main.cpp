@@ -546,7 +546,7 @@ void pre_auton(void) {
 
 
 void autonomous(void) {
-  /*
+  
   moveFWD(10, 75);
   BackArmDown(180, 100);
   turnToCenterBlue();
@@ -556,7 +556,7 @@ void autonomous(void) {
   FrontArmDown(90, 50);
   frontClawUp(180, 100);
   turnRight(90, 50);
-  moveREV(10, 75);*/
+  moveREV(10, 75);
   
 }
 
